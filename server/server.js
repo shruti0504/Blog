@@ -3,7 +3,7 @@ const path = require("path");
 const cors = require("cors");
 const userRouter = require("./routes/user-routes");
 const blogRouter = require("./routes/blog-routes");
-require("./config/db"); // Ensure your database connection file is correctly set up
+require("./config/db");
 
 const app = express();
 
@@ -11,15 +11,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Set view engine (if using templates like EJS)
-app.set("view engine", "ejs");
+// Serve static files from the client/public directory
+app.use(express.static(path.join(__dirname, "../client/public")));
 
-// Serve static files (e.g., HTML, CSS, JS) from 'public' directory
-app.use(express.static(path.join(__dirname, "public")));
-
-// Root route - handle requests to "/"
+// Root route - serve index.html from client/public
 app.get("/", (req, res) => {
-  res.send("Welcome to the Blog API! Navigate to /api/users or /api/blogs.");
+  res.sendFile(path.join(__dirname, "../client/public", "index.html"));
 });
 
 // API routes
@@ -31,7 +28,7 @@ app.use("/api", (req, res) => {
   res.send("API Home: Use /api/users or /api/blogs for specific actions.");
 });
 
-// Global error handling middleware (optional, for debugging)
+// Global error handling middleware (optional)
 app.use((err, req, res, next) => {
   console.error("Error occurred:", err.stack);
   res.status(500).send("Something went wrong!");
